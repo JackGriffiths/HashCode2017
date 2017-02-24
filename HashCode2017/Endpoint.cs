@@ -20,5 +20,24 @@ namespace HashCode2017 {
 
             return DataCenterLatency - CacheServerLatencies.Min(i => i.Value);
         }
+
+        public void TryCacheVideoAtClosestServer(Video video) {
+            var orderedServers = CacheServerLatencies
+                .OrderBy(i => i.Value) // Order by latency
+                .Select(i => i.Key);
+
+            foreach (var server in orderedServers) {
+                if (server.Videos.Contains(video)) {
+                    // Already cached.
+                    break;
+                }
+
+                if (server.CanAddVideo(video)) {
+                    server.AddVideo(video);
+
+                    break;
+                }
+            }
+        }
     }
 }

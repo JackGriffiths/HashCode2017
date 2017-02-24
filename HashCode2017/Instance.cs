@@ -121,24 +121,7 @@ namespace HashCode2017 {
                     .OrderByDescending(i => i.Requests);
 
                 foreach (var videoRequest in videoRequests) {
-                    var video = videoRequest.Video;
-
-                    var orderedServers = endpoint.CacheServerLatencies
-                        .OrderBy(i => i.Value) // Order by latency
-                        .Select(i => i.Key);
-
-                    foreach (var server in orderedServers) {
-                        if (server.Videos.Contains(video)) {
-                            // Already cached.
-                            break;
-                        }
-
-                        if (server.CanAddVideo(video)) {
-                            server.AddVideo(video);
-
-                            break;
-                        }
-                    }
+                    endpoint.TryCacheVideoAtClosestServer(videoRequest.Video);
                 }
             }
         }
@@ -153,19 +136,7 @@ namespace HashCode2017 {
                 .OrderByDescending(r => r.NumberOfRequests * r.Endpoint.CalculateBestLatencySaving());
 
             foreach (var request in requests) {
-                var video = request.Video;
-
-                var orderedServers = request.Endpoint.CacheServerLatencies
-                    .OrderBy(i => i.Value) // Order by latency
-                    .Select(i => i.Key);
-
-                foreach (var server in orderedServers) {
-                    if (server.CanAddVideo(video)) {
-                        server.AddVideo(video);
-
-                        break;
-                    }
-                }
+                request.Endpoint.TryCacheVideoAtClosestServer(request.Video);
             }
         }
 
@@ -185,19 +156,7 @@ namespace HashCode2017 {
                     (1 - Scale(minVideoSize, maxVideoSize, r.Video.Size)));
 
             foreach (var request in requests) {
-                var video = request.Video;
-
-                var orderedServers = request.Endpoint.CacheServerLatencies
-                    .OrderBy(i => i.Value) // Order by latency
-                    .Select(i => i.Key);
-
-                foreach (var server in orderedServers) {
-                    if (server.CanAddVideo(video)) {
-                        server.AddVideo(video);
-
-                        break;
-                    }
-                }
+                request.Endpoint.TryCacheVideoAtClosestServer(request.Video);
             }
         }
 
